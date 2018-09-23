@@ -35,24 +35,24 @@
 		}
 	}
 	
-	$config_string = "";
-	
-	foreach ($config as $key => $value)
-	{
-		$config_string .= $key . "=\"" . $value . "\"\n";
-	}
-	
-	
 	mkdir("./jobs/queue/" . $job_id);
 	chdir("./jobs/queue/" . $job_id);
 	
-	file_put_contents("status.json", "{ \"status\": 1, \"status_text\": \"queued\" }");
+	file_put_contents("status.json", "{ \"status\": 1, \"status_text\": \"queued\", \"result\": 0, \"result_text\": \"ok\" }");
 	file_put_contents("input.js", $_POST["javascript_text"]);
 	
 	if ($_POST["externs_text"] != "")
 	{
 		$config["externs"] = "yes";
 		file_put_contents("externs.js", $_POST["externs_text"]);
+	}
+	
+	
+	$config_string = "";
+	
+	foreach ($config as $key => $value)
+	{
+		$config_string .= $key . "=\"" . $value . "\"\n";
 	}
 	
 	file_put_contents("config.txt", $config_string);

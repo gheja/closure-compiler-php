@@ -13,44 +13,51 @@ cd "${jobs_dir}/queue"
 while [ 1 ]; do
 	sleep 1
 	
-	jobs=`ls -1tr | grep -Eo '^[0-9a-z]+$' | head -n 1`
+	jobs=`ls -1tr | grep -Eo '^[0-9a-z]+$'`
 	
 	if [ "$jobs" == "" ]; then
 		continue
 	fi
 	
 	for job in $jobs; do
-		if [ ! -e "${jobs_dir}/new/${job}/upload_done.flag" ]; then
+		echo $job
+		if [ ! -e "${jobs_dir}/queue/${job}/upload_done.flag" ]; then
+			echo "b"
+			
 			continue
 		fi
 		
-		cd "${jobs_dir}/new/${job}"
+		echo "a"
+		
+		cd "${jobs_dir}/queue/${job}"
 		
 		{
-			echo "{ \"status\": 2, \"status_text\": \"running\", \"result\": 0, \"result_text\": \"done\" }" > status.json.tmp
+			echo "{ \"status\": 2, \"status_text\": \"running\", \"result\": 0, \"result_text\": \"ok\" }" > status.json.tmp
 			
 			# mv is atomic
 			mv status.json.tmp status.json
 			
 			echo "Job: ${job}"
-			date '+%Y-%m-%d %H:%M:%S %+z'
+			date '+%Y-%m-%d %H:%M:%S %:z'
+			echo ""
 			
 			$scripts_dir/compiler_run.sh .
 			result=$?
 			
-			date '+%Y-%m-%d %H:%M:%S %+z'
+			echo ""
+			date '+%Y-%m-%d %H:%M:%S %:z'
 			
 			echo ""
 			echo "Exit code: $result"
-			echo ""
 			
+			echo ""
 			echo "   bytes  file name"
-			stat --format '%8s  %n'
+			stat --format '%8s  %n' *
 			
 			if [ $result == 0 ]; then
-				echo "{ \"status\": 4, \"status_text\": \"finished\", \"result\": 0, \"result_text\": \"done\" }" > status.json.tmp
+				echo "{ \"status\": 4, \"status_text\": \"finished\", \"result\": 0, \"result_text\": \"ok\" }" > status.json.tmp
 			else
-				echo "{ \"status\": 3, \"status_text\": \"failed\", \"result\": $result, \"result_text\": \"failed\" }" > status.json.tmp
+				echo "{ \"status\": 3, \"status_text\": \"failed\", \"result\": 0, \"result_text\": \"ok\" }" > status.json.tmp
 			fi
 			
 			# mv is atomic

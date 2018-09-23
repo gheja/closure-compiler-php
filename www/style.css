@@ -10,3 +10,33 @@ label
 	padding: 0;
 	margin: 0.5em 0 0 0;
 }
+
+textarea
+{
+	width: 100%;
+}
+
+.error
+{
+	color: #e00;
+}
+
+.warning
+{
+	color: #ea0;
+}
+
+.other
+{
+	color: #04e;
+}
+
+.success
+{
+	color: #0e0;
+}
+
+pre
+{
+	font-family: monospace;
+}

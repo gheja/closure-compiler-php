@@ -16,5 +16,21 @@
 			
 			<input type="submit" name="submit" value="Submit" />
 		</form>
+		
+		<div id="status">...</div>
+		
+		<hr/>
+		
+		
+		<label for="output_js1">Phase 1 output:</label>
+		<textarea id="output_js1" readonly="readonly"></textarea>
+		
+		<label for="output_js2">Phase 2 output:</label>
+		<textarea id="output_js2" readonly="readonly"></textarea>
+		
+		<label for="output_log">Log:</label>
+		<pre id="output_log">...</pre>
+		
+		<a href="#" id="output_link" target="_blank">Output directory</a>
 	</body>
 </html>
