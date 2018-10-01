@@ -27,7 +27,7 @@
 	
 	$a = array("single_quotes", "jscomp_off_checkvars", "rewrite_polyfills");
 	
-	foreach ($a as $key => $tmp)
+	foreach ($a as $key)
 	{
 		if (array_key_exists($key, $_POST) && $_POST[$key] == "yes")
 		{

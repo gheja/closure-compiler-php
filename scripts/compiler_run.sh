@@ -52,6 +52,7 @@ fi
 . config.txt
 
 options=""
+options2=""
 
 if [ "$language_in" != "auto" ]; then
 	options="$options --language_in $language_in"
@@ -63,6 +64,7 @@ fi
 
 if [ "$single_quotes" == "yes" ]; then
 	options="$options --formatting SINGLE_QUOTES"
+	options2="$options2 --formatting SINGLE_QUOTES"
 fi
 
 if [ "$jscomp_off_checkvars" == "yes" ]; then
@@ -76,6 +78,10 @@ fi
 if [ "$externs" == "yes" ]; then
 	options="$options --externs externs.js"
 fi
+
+echo "{ \"status\": 2, \"status_text\": \"Running... Closure Compiler (phase 1)\", \"result\": 0, \"result_text\": \"ok\" }" > status.json.tmp
+# mv is atomic
+mv status.json.tmp status.json
 
 $java -jar $compiler \
 	--compilation_level ADVANCED_OPTIMIZATIONS \
@@ -95,18 +101,27 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
+echo "{ \"status\": 2, \"status_text\": \"Running... Closure Compiler (phase 2)\", \"result\": 0, \"result_text\": \"ok\" }" > status.json.tmp
+# mv is atomic
+mv status.json.tmp status.json
+
 $java -jar $compiler \
 	--compilation_level WHITESPACE_ONLY \
 	--js output1.js \
 	--js_output_file output2.js \
 	--logging_level FINEST \
 	--warning_level VERBOSE \
-	--summary_detail_level 3 > output2.log 2>&1
+	--summary_detail_level 3 \
+	$options2 > output2.log 2>&1
 
 if [ $? != 0 ]; then
 	echo "Closure compiler (phase 2) returned an error, exiting."
 	exit 1
 fi
+
+echo "{ \"status\": 2, \"status_text\": \"Running... Advzip (phase 1)\", \"result\": 0, \"result_text\": \"ok\" }" > status.json.tmp
+# mv is atomic
+mv status.json.tmp status.json
 
 $advzip -a output2.zip output2.js
 
@@ -114,6 +129,10 @@ if [ $? != 0 ]; then
 	echo "Advzip (phase 1) returned an error, exiting."
 	exit 1
 fi
+
+echo "{ \"status\": 2, \"status_text\": \"Running... Advzip (phase 2)\", \"result\": 0, \"result_text\": \"ok\" }" > status.json.tmp
+# mv is atomic
+mv status.json.tmp status.json
 
 if [ "$advzip_level" != "0" ]; then
 	$advzip -z -4 -i 500 output2.zip
